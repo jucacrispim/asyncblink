@@ -1,5 +1,3 @@
-Signals with coroutines!
-
 AsyncBlink is a small extention to Blinker and enables you to use
 coroutines as receivers for your signals.
 
@@ -40,3 +38,9 @@ In fact, AsyncBlink's usage is the same as Blinker, you simply can use
 coroutines as receivers. Take a look at the
 [Blinker documentation](http://pythonhosted.org/blinker/>) for
 further information.
+
+
+Source Code
+===========
+
+Source code is hosted on [gitlab](https://gitlab.com/jucacrispim/asyncblink).

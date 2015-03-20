@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-"""
-"""
-
 import asyncio
 from blinker import Signal
 

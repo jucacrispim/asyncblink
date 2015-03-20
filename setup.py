@@ -13,7 +13,7 @@ def get_long_description_from_file():
 
 
 DESCRIPTION = """
-MongoMotor: An async document-object mapper for MongoDB
+Signals with coroutines!
 """
 LONG_DESCRIPTION = get_long_description_from_file()
 
