@@ -23,7 +23,7 @@ setup(name='asyncblink',
       author_email='juca@poraodojuca.net',
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
-      url='https://testpypi.python.org/pypi/asyncblink',
+      url='https://pypi.python.org/pypi/asyncblink',
       packages=find_packages(exclude=['tests', 'tests.*']),
       install_requires=['blinker>=1.3'],
       classifiers=[
