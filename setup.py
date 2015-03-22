@@ -18,16 +18,16 @@ Signals with coroutines!
 LONG_DESCRIPTION = get_long_description_from_file()
 
 setup(name='asyncblink',
-      version='0.1',
+      version='0.1.1',
       author='Juca Crispim',
       author_email='juca@poraodojuca.net',
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       url='https://pypi.python.org/pypi/asyncblink',
-      packages=find_packages(exclude=['tests', 'tests.*']),
+      py_modules=['asyncblink'],
       install_requires=['blinker>=1.3'],
       classifiers=[
-          'Development Status :: 3 - Alpha',
+          'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: GNU General Public License (GPL)',
           'Natural Language :: English',
