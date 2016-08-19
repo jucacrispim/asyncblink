@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+from tornado import gen, ioloop
+from tornado.platform.asyncio import to_tornado_future
 from tornado.testing import AsyncTestCase, gen_test
 from asyncblink import signal
 
@@ -21,6 +23,9 @@ class AsyncBlinkTest(AsyncTestCase):
 
         self.signal = signal('test-signal')
 
+    def get_new_ioloop(self):
+        return ioloop.IOLoop.instance()
+
     def test_send(self):
         self.RECV_CALLED = False
 
@@ -38,11 +43,32 @@ class AsyncBlinkTest(AsyncTestCase):
 
         @asyncio.coroutine
         def coro_receiver(sender):
+            yield from asyncio.coroutine(lambda: None)()
             self.CORO_CALLED = True
             return 'coro!'
 
         self.signal.connect(coro_receiver)
-        self.signal.send('sender!')
-        # shitty sleep.
-        yield from asyncio.sleep(.0001)
+        r = self.signal.send('sender!')
+        yield from r[0][1]
         self.assertTrue(self.CORO_CALLED)
+
+    @gen_test
+    def test_send_with_tornado_coro(self):
+
+        self.TORNADO_CORO_CALLED = False
+
+        @gen.coroutine
+        def coro_receiver(sender):
+            yield gen.coroutine(lambda: None)()
+            self.TORNADO_CORO_CALLED = True
+            return 'tornado coro!'
+
+        def scheduler(future):
+            loop = ioloop.IOLoop.instance()
+            loop.add_future(future, lambda f: f)
+            return future
+
+        self.signal.connect(coro_receiver, scheduler=scheduler)
+        r = self.signal.send('sender!')
+        yield r[0][1]
+        self.assertTrue(self.TORNADO_CORO_CALLED)
