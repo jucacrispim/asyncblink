@@ -64,7 +64,7 @@ using the parameter ``scheduler``:
 ```
 
 Other than that, AsyncBlink's usage is the same as Blinker, Take a look at the
-`Blinker documentation <http://pythonhosted.org/blinker/>`_ for further
+`[Blinker documentation](http://pythonhosted.org/blinker/) for further
 information.
 
 
