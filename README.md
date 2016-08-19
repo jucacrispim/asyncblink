@@ -34,15 +34,10 @@ my_signal.connect(receiver)
 my_signal.send('some-sender')
 ```
 
-In fact, AsyncBlink's usage is the same as Blinker, you simply can use
-coroutines as receivers. Take a look at the
-[Blinker documentation](http://pythonhosted.org/blinker/>) for
-further information.
-
 Using AsyncBlink with tornado coroutines
 ========================================
 
-To use `tornado coroutines <http://www.tornadoweb.org/en/stable/gen.html>`_
+To use [tornado coroutines](http://www.tornadoweb.org/en/stable/gen.html)
 pass a callable that schedules the execution of a future
 using the parameter ``scheduler``:
 
