@@ -25,29 +25,14 @@ class AsyncSignal(Signal):
         :param \*\*kwargs: Data to be sent to receivers.
 
         """
-        # Using '*sender' rather than 'sender=None' allows 'sender' to be
-        # used as a keyword argument- i.e. it's an invisible name in the
-        # function signature.
-        if len(sender) == 0:
-            sender = None
-        elif len(sender) > 1:
-            raise TypeError('send() accepts only one positional argument, '
-                            '%s given' % len(sender))
-        else:
-            sender = sender[0]
 
-        # the only difference is here. If it's a coroutine,
-        # run it with asyncio.async()
-        receivers = self.receivers_for(sender) or []
-        return_list = []
-
-        for receiver in receivers:
-            ret = receiver(sender, **kwargs)
-            if asyncio.coroutines.iscoroutine(ret):
-                ret = ensure_future(ret)
-            return_list.append((receiver, ret))
-
-        return return_list
+        # tks jek
+        def _wrap(value):
+            if asyncio.coroutines.iscoroutine(value):
+                yield from value
+            return value
+        return [(receiver, ensure_future(_wrap(value)))
+                for receiver, value in super().send(*sender, **kwargs)]
 
 
 class NamedAsyncSignal(AsyncSignal):
