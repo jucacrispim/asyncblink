@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+try:
+    from asyncio import ensure_future
+except ImportError:
+    from asyncio import async as ensure_future
+
 from blinker import Signal
 
 
@@ -39,7 +44,7 @@ class AsyncSignal(Signal):
         for receiver in receivers:
             ret = receiver(sender, **kwargs)
             if asyncio.coroutines.iscoroutine(ret):
-                ret = asyncio.async(ret)
+                ret = ensure_future(ret)
             return_list.append((receiver, ret))
 
         return return_list
