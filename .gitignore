@@ -17,3 +17,6 @@ dist/
 build/
 *.egg-info/
 _trial_temp
+*.eggs/
+*.egg
+/.dir-locals.el
