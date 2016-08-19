@@ -39,8 +39,36 @@ coroutines as receivers. Take a look at the
 [Blinker documentation](http://pythonhosted.org/blinker/>) for
 further information.
 
+Using AsyncBlink with tornado coroutines
+========================================
+
+To use `tornado coroutines <http://www.tornadoweb.org/en/stable/gen.html>`_
+pass a callable that schedules the execution of a future
+using the parameter ``scheduler``:
+
+```python
+
+   from tornado import gen, ioloop
+
+   @gen.coroutine
+   def tornado_coro_receiver(sender, **kwargs):
+       # do something
+       return 'done'
+
+   def scheduler(future):
+        loop = ioloop.IOLoop.instance()
+        loop.add_future(future, lambda f: f)
+	return future
+
+   my_signal.connect(tornado_coro_receiver, scheduler=scheduler)
+```
+
+Other than that, AsyncBlink's usage is the same as Blinker, Take a look at the
+`Blinker documentation <http://pythonhosted.org/blinker/>`_ for further
+information.
+
 
 Source Code
 ===========
 
-Source code is hosted on [gitlab](https://gitlab.com/jucacrispim/asyncblink).
+Source code is hosted on [github](https://github.com/jucacrispim/asyncblink).
