@@ -14,13 +14,22 @@ from blinker._utilities import hashable_identity
 class AsyncSignal(Signal):
 
     def __init__(self, *args, **kwargs):
+        """ Constructor for AsyncSignal
 
+        :param \*args: Arguments list passed to super() constructor.
+        :param \*\*kwargs: Keywork arguments passed to super() constructor.
+
+        .. note::
+
+           Here you can use scheduler=<some-scheduler>. The scheduler is a
+           callable used to ensure the execution of a future.
+           Note that if you do not provide an ``scheduler`` and the receiver
+           function is a coroutine  :func:`asyncio.ensure_future` will be used.
+
+        """
+        self.scheduler = kwargs.pop('scheduler', ensure_future)
         super().__init__(*args, **kwargs)
-        # the default scheduler is a dummy one, used to wrap
-        # values that are not coroutines
-        self._recievers_schedulers = defaultdict(lambda: lambda v:v)
 
-    # Exact the same as blinker, but using asyncio
     def send(self, *sender, **kwargs):
         """ Emit this signal on behalf of *sender*, passing on \*\*kwargs.
 
@@ -35,43 +44,19 @@ class AsyncSignal(Signal):
 
         """
 
-        return [(reciever, self._recievers_schedulers[
-            hashable_identity(reciever)](value))
-                for reciever, value in super().send(*sender, **kwargs)]
+        ret = []
+        for receiver, value in super().send(*sender, **kwargs):
+            if self._is_future(value):
+                value = self.scheduler(value)
 
-    def connect(self, receiver, sender=ANY, weak=True, scheduler=None):
-        """Connect *receiver* to signal events sent by *sender*.
+            ret.append((receiver, value))
 
-        :param receiver: A callable.  Will be invoked by :meth:`send` with
-          `sender=` as a single positional argument and any \*\*kwargs that
-          were provided to a call to :meth:`send`.
+        return ret
 
-        :param sender: Any object or :obj:`ANY`, defaults to ``ANY``.
-          Restricts notifications delivered to *receiver* to only those
-          :meth:`send` emissions sent by *sender*.  If ``ANY``, the receiver
-          will always be notified.  A *receiver* may be connected to
-          multiple *sender* values on the same Signal through multiple calls
-          to :meth:`connect`.
-
-        :param weak: If true, the Signal will hold a weakref to *receiver*
-          and automatically disconnect when *receiver* goes out of scope or
-          is garbage collected.  Defaults to True.
-
-        :param scheduler: Callable used to ensure the execution of a future.
-          Note that if you do not provide an ``schedule`` and ``reciever``
-          is a function decorated with :func:`asyncio.coroutine`,
-          :func:`asyncio.ensure_future` will be used.
-
-        """
-        reciever = super().connect(receiver, sender, weak)
-        reciever_id = hashable_identity(receiver)
-        if scheduler or asyncio.coroutines.iscoroutinefunction(receiver):
-            if not scheduler:
-                scheduler = ensure_future
-
-            self._recievers_schedulers[reciever_id] = scheduler
-
-        return reciever
+    def _is_future(self, val):
+        if hasattr(val, 'add_done_callback'):
+            return True
+        return False
 
 
 class NamedAsyncSignal(AsyncSignal):

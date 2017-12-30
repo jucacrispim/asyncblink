@@ -1,11 +1,24 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-from tornado import gen, ioloop
-from tornado.platform.asyncio import to_tornado_future
-from tornado.testing import AsyncTestCase, gen_test
+from unittest import TestCase
+try:
+    from tornado import gen, ioloop
+    from tornado.platform.asyncio import to_tornado_future
+    from tornado.testing import AsyncTestCase, gen_test
+    has_tornado = True
+except ImportError:
+    has_tornado = False
+
 from asyncblink import signal
 
+
+if has_tornado:
+    test_case_class = AsyncTestCase
+else:
+    msg = 'Tornado not prenset. Not running tests for different schedulers!'
+    print('\n{}\n'.format(msg))
+    test_case_class = TestCase
 
 def async_test(f):
     def wrapper(*args, **kwargs):
@@ -17,7 +30,7 @@ def async_test(f):
 
 
 
-class AsyncBlinkTest(AsyncTestCase):
+class AsyncBlinkTest(test_case_class):
     def setUp(self):
         super(AsyncBlinkTest, self).setUp()
 
@@ -52,23 +65,26 @@ class AsyncBlinkTest(AsyncTestCase):
         yield from r[0][1]
         self.assertTrue(self.CORO_CALLED)
 
-    @gen_test
-    def test_send_with_tornado_coro(self):
+    if has_tornado:
+        @gen_test
+        def test_send_with_tornado_coro(self):
 
-        self.TORNADO_CORO_CALLED = False
+            self.TORNADO_CORO_CALLED = False
 
-        @gen.coroutine
-        def coro_receiver(sender):
-            yield gen.coroutine(lambda: None)()
-            self.TORNADO_CORO_CALLED = True
-            return 'tornado coro!'
+            @gen.coroutine
+            def coro_receiver(sender):
+                yield gen.coroutine(lambda: None)()
+                self.TORNADO_CORO_CALLED = True
+                return 'tornado coro!'
 
-        def scheduler(future):
-            loop = ioloop.IOLoop.instance()
-            loop.add_future(future, lambda f: f)
-            return future
+            def scheduler(future):
+                loop = ioloop.IOLoop.instance()
+                loop.add_future(future, lambda f: f)
+                return future
 
-        self.signal.connect(coro_receiver, scheduler=scheduler)
-        r = self.signal.send('sender!')
-        yield r[0][1]
-        self.assertTrue(self.TORNADO_CORO_CALLED)
+            self.signal.scheduler = scheduler
+            self.signal.connect(coro_receiver)
+
+            r = self.signal.send('sender!')
+            yield r[0][1]
+            self.assertTrue(self.TORNADO_CORO_CALLED)

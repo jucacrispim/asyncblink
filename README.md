@@ -55,7 +55,9 @@ using the parameter ``scheduler``:
         loop.add_future(future, lambda f: f)
 	return future
 
-   my_signal.connect(tornado_coro_receiver, scheduler=scheduler)
+   my_signal = signal('nice-tornado-signal', scheduler=scheduler)
+   my_signal.connect(tornado_coro_receiver)
+   my_signal.send('some-sender')
 ```
 
 Other than that, AsyncBlink's usage is the same as Blinker, Take a look at the
