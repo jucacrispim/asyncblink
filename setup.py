@@ -18,7 +18,7 @@ Signals with coroutines!
 LONG_DESCRIPTION = get_long_description_from_file()
 
 setup(name='asyncblink',
-      version='0.2',
+      version='0.3',
       author='Juca Crispim',
       author_email='juca@poraodojuca.net',
       description=DESCRIPTION,
