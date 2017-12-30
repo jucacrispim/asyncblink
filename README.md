@@ -21,8 +21,8 @@ and then use the ``send()`` method to trigger all receivers
 from asyncblink import signal
 my_signal = signal('nice-signal')
 
-@asyncio.coroutine
-def coro_receiver(sender, **kwargs):
+
+async def coro_receiver(sender, **kwargs):
     # an expensive io operation here
     return 'done'
 
