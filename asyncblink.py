@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import asyncio
 try:
     from asyncio import ensure_future
 except ImportError:
     from asyncio import async as ensure_future
 from collections import defaultdict
+import inspect
 from blinker import Signal
 from blinker.base import ANY
 from blinker._utilities import hashable_identity
@@ -54,9 +54,7 @@ class AsyncSignal(Signal):
         return ret
 
     def _is_future(self, val):
-        if hasattr(val, 'add_done_callback'):
-            return True
-        return False
+        return inspect.isawaitable(val)
 
 
 class NamedAsyncSignal(AsyncSignal):

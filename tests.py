@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+import sys
 from unittest import TestCase
 try:
     from tornado import gen, ioloop
@@ -12,6 +13,8 @@ except ImportError:
 
 from asyncblink import signal
 
+
+PY35 = sys.version_info[:2] >= (3, 5)
 
 if has_tornado:
     test_case_class = AsyncTestCase
@@ -64,6 +67,19 @@ class AsyncBlinkTest(test_case_class):
         r = self.signal.send('sender!')
         yield from r[0][1]
         self.assertTrue(self.CORO_CALLED)
+
+    if PY35:
+        @async_test
+        async def test_send_async(self):
+            self.CORO_CALLED = False
+            async def receiver(sender):
+                await asyncio.coroutine(lambda: None)()
+                self.CORO_CALLED = True
+
+            self.signal.connect(receiver)
+            r = self.signal.send('sender')
+            await r[0][1]
+            self.assertTrue(self.CORO_CALLED)
 
     if has_tornado:
         @gen_test
