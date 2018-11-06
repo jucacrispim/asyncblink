@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import asyncio
+
 try:
-    from asyncio import ensure_future
+    ensure_future = asyncio.ensure_future
 except ImportError:
-    from asyncio import async as ensure_future
+    ensure_future = getattr(asyncio, "async")
+
 from collections import defaultdict
 import inspect
 from blinker import Signal
