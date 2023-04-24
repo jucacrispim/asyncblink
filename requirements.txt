@@ -1,2 +1,4 @@
 blinker==1.6.2
 twine==4.0.2
+build==0.10.0
+pyproject_hooks==1.0.0
