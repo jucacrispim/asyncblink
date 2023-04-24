@@ -20,3 +20,4 @@ _trial_temp
 *.eggs/
 *.egg
 /.dir-locals.el
+/.tox/

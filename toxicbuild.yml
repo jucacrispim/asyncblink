@@ -10,5 +10,5 @@ branches:
 
 steps:
    - name: Run tests
-     command: python setup.py test
+     command: pytest tests.py
      timeout: 10
