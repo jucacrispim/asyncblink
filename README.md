@@ -34,35 +34,19 @@ my_signal.connect(receiver)
 my_signal.send('some-sender')
 ```
 
-Using AsyncBlink with tornado coroutines
-========================================
-
-To use [tornado coroutines](http://www.tornadoweb.org/en/stable/gen.html)
-pass a callable that schedules the execution of a future
-using the parameter ``scheduler``:
-
-```python
-
-   from tornado import gen, ioloop
-
-   @gen.coroutine
-   def tornado_coro_receiver(sender, **kwargs):
-       # do something
-       return 'done'
-
-   def scheduler(future):
-        loop = ioloop.IOLoop.instance()
-        loop.add_future(future, lambda f: f)
-	return future
-
-   my_signal = signal('nice-tornado-signal', scheduler=scheduler)
-   my_signal.connect(tornado_coro_receiver)
-   my_signal.send('some-sender')
-```
-
 Other than that, AsyncBlink's usage is the same as Blinker, Take a look at the
 `[Blinker documentation](http://pythonhosted.org/blinker/) for further
 information.
+
+
+Why this still exists?
+======================
+
+Blinker now supports coroutines via ``signal.async_send``, so why asyncblink
+is still alive?
+
+The blinker's implementation awaits for coroutines and it is not what I want
+so asyncblink schedules the coroutine and returns a task.
 
 
 Source Code
