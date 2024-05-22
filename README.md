@@ -7,7 +7,7 @@ Install
 Installation is simple, via pip:
 
 ```sh
-   $ pip install asyncblink
+   $ pip install asyncblink --extra-index-url=https://pypi.poraodojuca.dev
 ```
 
 
