@@ -12,3 +12,37 @@ steps:
    - name: Run tests
      command: pytest tests.py
      timeout: 10
+
+
+builders:
+
+  - name: Package release
+
+    triggered_by:
+
+      - builder_name: python3.9
+        statuses:
+          - success
+
+      - builder_name: python3.10
+        statuses:
+          - success
+
+      - builder_name: python3.11
+        statuses:
+          - success
+
+
+    platform: python3.11
+
+    plugins:
+      - name: apt-install
+        packages:
+          - curl
+
+      - name: python-venv
+        pyversion: python3.11
+
+    steps:
+      - name: Release package
+        command: bash release.sh
