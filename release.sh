@@ -2,7 +2,7 @@
 
 rm -rf dist/
 
-python -b build
+python -m build
 
 cd dist
 
