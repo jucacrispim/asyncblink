@@ -5,7 +5,6 @@ from collections import defaultdict
 import inspect
 from blinker import Signal
 from blinker.base import ANY
-from blinker._utilities import hashable_identity
 
 
 class AsyncSignal(Signal):
